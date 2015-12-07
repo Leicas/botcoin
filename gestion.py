@@ -29,7 +29,7 @@ def refreshbotOrd(user, cours, fee):
         if botorder[botcom[0]]['status'] == "closed":
           commandesbot[botcom[0]] = botorder[botcom[0]]
         else:
-          if float(botorder[botcom[0]]['price']) <= float(user['LastOrder']):
+          if float(botorder[botcom[0]]['descr']['price']) <= float(user['LastOrder']):
            retouran = k.query_private('CancelOrder', {'txid' : botcom[0]})['result']
            user['Solde'] = user['Solde'] + user['Mini']
            user['Order'].remove(botcom)
