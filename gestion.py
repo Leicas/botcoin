@@ -127,7 +127,7 @@ class Principal(npyscreen.ActionFormMinimal):
                       neworder = k.query_private('AddOrder',{'pair' : 'XXBTZEUR', 'type' : 'buy', 'ordertype': 'limit', 'price' : predi, 'volume' : vol })['result']
                       user['Solde'] = user['Solde'] - user['Mini']
                       user['LastOrder'] = str(float(predi) - 2.0)
-                      self.botinfo.value = user['Solde']
+                      self.botinfo.value = "Solde: " + str(user['Solde']) + " Profit: " + str(user['Profit'])
                       self.botinfo.display()
                       user['Order'].append(neworder['txid'])
                       #user['Enabled'] = 0
@@ -164,7 +164,7 @@ class Principal(npyscreen.ActionFormMinimal):
                         json.dump(user, outfile, indent=4)
                        with open("data.json","r") as data_file:
                         user = json.load(data_file)
-                       self.botinfo.value = "Solde" + str(user['Solde']) + " Profit:" + str(user['Profit'])
+                       self.botinfo.value = "Solde: " + str(user['Solde']) + " Profit: " + str(user['Profit'])
                        self.botinfo.display()
                        break
 
@@ -204,7 +204,7 @@ if __name__ == "__main__":
 #    operation = k.query_private('OpenPositions',{'docalcs' : 'true'})['result']
 #    opaff = []
     ordaff = []
-    botinfo = str(user['Solde'])
+    botinfo = "Solde: " + str(user['Solde']) + " Profit: " + str(user['Profit'])
 #    for op in operation:
 #        profit = float(operation[op]['value']) - float(operation[op]['fee']) - float(operation[op]['cost']) - float(operation[op]['value']) * float(fraisachat)*0.01
 #        opaff.append(operation[op]['cost'] + ' euros ' + operation[op]['fee'] + ' euros ' + operation[op]['net'] + ' profit ' + str(profit))
