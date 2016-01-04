@@ -5,6 +5,15 @@ commandesbot = {}
 iteration = 0
 itermax = 3
 
+def MinCom():
+    global commandesbot
+    min = 0.0
+    for commande in commandesbot:
+      if min == 0.0:
+        min = float( commandesbot[commande]['price'])
+      if float( commandesbot[commande]['price']) <= min:
+        min = float( commandesbot[commande]['price'])
+    return min
 def EnProfit(cours, fee):
     global commandesbot
     commandes = {}
@@ -12,7 +21,8 @@ def EnProfit(cours, fee):
       profit = float(commandesbot[commande]['vol']) * float(cours)
       profit = profit - profit * float(fee) * 0.01
       profit = profit - float( commandesbot[commande]['cost']) - float(commandesbot[commande]['fee'])
-      if profit > 0.05:
+      profimini = float( commandesbot[commande]['cost']) * 0.01
+      if profit > profimini:
         commandes[commande] = commandesbot[commande]
     return commandes
 def refreshbotOrd(user, cours, fee):
@@ -93,7 +103,7 @@ class Principal(npyscreen.ActionFormMinimal):
        #self.Affichage = self.add(npyscreen.TitlePager, values=opaff, use_two_lines=True,begin_entry_at=0, max_height=7, name='Operations',editable=False)
        self.Affichageord = self.add(npyscreen.TitlePager, values=ordaff, use_two_lines=True,begin_entry_at=0, max_height=7, name='Operations',editable=False)
        self.botinfo =  self.add(npyscreen.TitleFixedText, value=botinfo, use_two_lines=True,begin_entry_at=0, name='Botinfo',editable=False)
-       self.botinfoord = self.add(npyscreen.TitlePager, values=botord, use_two_lines=True,begin_entry_at=0, max_height=11, name='Botorder',editable=False)
+       self.botinfoord = self.add(npyscreen.TitlePager, values=botord, use_two_lines=True,begin_entry_at=0, max_height=16, name='Botorder',editable=False)
        self.keypress_timeout = 30
     def while_waiting(self):
            global iteration
@@ -109,7 +119,7 @@ class Principal(npyscreen.ActionFormMinimal):
                #cours = reponse['c'][0]+ " " + trending[len(trending)-1] + " " + trending[len(trending)-2] + " " + trending[len(trending)-3]
                predi = str(float(reponse['c'][0]) + trending)
                vol = str(user['Mini'] / float(predi))
-               cours = reponse['c'][0]+ " " + str(trending) + " " + predi + " " + vol
+               cours = reponse['c'][0]+ " " + str(trending) + " " + predi + " " + vol + " min: " + str(MinCom())
                self.cours.value = cours
                self.cours.display()
                if iteration >= itermax:
@@ -123,7 +133,7 @@ class Principal(npyscreen.ActionFormMinimal):
                if user['Enabled'] == 1:
                    if trending < 0:
                     if user['Solde'] > 0:
-                     if float(user['LastOrder']) > float(reponse['c'][0]):
+                     if float(user['LastOrder']) > float(reponse['c'][0]) and MinCom() > float(reponse['c'][0]):
                       neworder = k.query_private('AddOrder',{'pair' : 'XXBTZEUR', 'type' : 'buy', 'ordertype': 'limit', 'price' : predi, 'volume' : vol })['result']
                       user['Solde'] = user['Solde'] - user['Mini']
                       user['LastOrder'] = str(float(predi) - 2.0)
